@@ -1,0 +1,10 @@
+{
+    "prisma.pinToPrisma6": true,
+    "python-envs.pythonProjects": [
+        {
+            "path": "apps/web/src/hooks",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ]
+}
