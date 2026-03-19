@@ -102,7 +102,7 @@ async function main() {
     await prisma.storeSettings.create({
       data: {
         storeName: 'Mega Móveis',
-        whatsappNumber: '5575999999999',
+        whatsappNumber: '5575991640739',
         contactEmail: 'contato@megamoveis.com',
         phoneNumber: '(75) 99999-9999',
         addressLine: 'Rua Exemplo, 123',
@@ -112,7 +112,7 @@ async function main() {
         aboutTitle: 'Sobre a Mega Móveis',
         aboutText:
           'Loja especializada em móveis e eletrodomésticos, com atendimento personalizado e vendas via WhatsApp.',
-        instagramUrl: 'https://instagram.com/megamoveis',
+        instagramUrl: 'https://instagram.com/megamoveisserrinha.ba',
         facebookUrl: 'https://facebook.com/megamoveis',
       },
     });

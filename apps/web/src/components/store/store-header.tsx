@@ -8,7 +8,7 @@ type StoreHeaderProps = {
 
 export function StoreHeader({ storeSettings }: StoreHeaderProps) {
   return (
-    <header className="border-b border-slate-200 bg-white">
+    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         <Link href="/" className="flex items-center gap-3">
           {storeSettings.logoUrl ? (
@@ -23,12 +23,17 @@ export function StoreHeader({ storeSettings }: StoreHeaderProps) {
             </div>
           ) : null}
 
-          <span className="text-lg font-semibold text-slate-900">
-            {storeSettings.storeName}
-          </span>
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold text-slate-900">
+              {storeSettings.storeName}
+            </span>
+            <span className="text-xs text-slate-500">
+              Móveis e eletrodomésticos
+            </span>
+          </div>
         </Link>
 
-        <nav className="flex items-center gap-6 text-sm text-slate-600">
+        <nav className="hidden items-center gap-6 text-sm text-slate-600 md:flex">
           <Link href="/" className="transition hover:text-slate-900">
             Início
           </Link>
@@ -42,6 +47,15 @@ export function StoreHeader({ storeSettings }: StoreHeaderProps) {
             Contato
           </Link>
         </nav>
+
+        <Link
+          href={`https://wa.me/${storeSettings.whatsappNumber}`}
+          target="_blank"
+          rel="noreferrer"
+          className="hidden h-10 items-center justify-center rounded-md bg-green-600 px-4 text-sm font-medium text-white transition hover:bg-green-700 md:inline-flex"
+        >
+          WhatsApp
+        </Link>
       </div>
     </header>
   );

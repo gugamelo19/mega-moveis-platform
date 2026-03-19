@@ -1,3 +1,4 @@
+import { FloatingWhatsAppButton } from "@/components/store/floating-whatsapp-button";
 import { StoreFooter } from "@/components/store/store-footer";
 import { StoreHeader } from "@/components/store/store-header";
 import { getPublicStoreSettings } from "@/features/store-settings/services/get-public-store-settings";
@@ -18,6 +19,11 @@ export default async function PublicLayout({
       <main>{children}</main>
 
       <StoreFooter storeSettings={storeSettings} />
+
+      <FloatingWhatsAppButton
+        whatsappNumber={storeSettings.whatsappNumber}
+        storeName={storeSettings.storeName}
+      />
     </div>
   );
 }
