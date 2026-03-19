@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CategoryStatusBadge } from "@/components/admin/category-status-badge";
+import { Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { deleteCategory } from "@/features/categories/services/delete-category";
 import { getAdminCategories } from "@/features/categories/services/get-admin-categories";
 import type { Category } from "@/features/categories/types/category.type";
@@ -13,211 +11,145 @@ import { getAccessToken } from "@/lib/auth-storage";
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+  async function fetchCategories(currentSearch?: string) {
+    const token = getAccessToken();
+    if (!token) return null;
+
+    return getAdminCategories({
+      token,
+      search: currentSearch,
+    });
+  }
 
   async function loadCategories(currentSearch?: string) {
-    try {
-      setError(null);
-      setLoading(true);
+    const response = await fetchCategories(currentSearch);
+    if (!response) return;
 
-      const token = getAccessToken();
-
-      if (!token) {
-        setError("Sessão não encontrada");
-        return;
-      }
-
-      const response = await getAdminCategories({
-        token,
-        search: currentSearch,
-      });
-
-      setCategories(response);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Não foi possível carregar as categorias"
-      );
-    } finally {
-      setLoading(false);
-    }
+    setCategories(response);
   }
 
   useEffect(() => {
-    void loadCategories();
-  }, []);
+    async function initializeCategories() {
+      const response = await fetchCategories();
+      if (!response) return;
 
-  async function handleSearchSubmit(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
-    event.preventDefault();
-    await loadCategories(search);
-  }
+      setCategories(response);
+    }
+
+    void initializeCategories();
+  }, []);
 
   async function handleDelete(category: Category) {
     const confirmed = window.confirm(
-      `Tem certeza que deseja excluir a categoria "${category.name}"?`
+      `Deseja excluir a categoria "${category.name}"?`
     );
+    if (!confirmed) return;
 
-    if (!confirmed) {
-      return;
-    }
+    const token = getAccessToken();
+    if (!token) return;
 
-    try {
-      const token = getAccessToken();
+    await deleteCategory({
+      token,
+      id: category.id,
+    });
 
-      if (!token) {
-        setError("Sessão não encontrada");
-        return;
-      }
-
-      await deleteCategory({
-        token,
-        id: category.id,
-      });
-
-      await loadCategories(search);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Não foi possível excluir a categoria"
-      );
-    }
+    await loadCategories(search);
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Categorias</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Gerencie as categorias exibidas no catálogo da loja.
-          </p>
+          <h1 className="mm-page-title">Categorias</h1>
+          <p className="mm-page-subtitle">Gerencie as categorias de produtos</p>
         </div>
 
-        <Button asChild>
-          <Link href="/admin/categories/new">Nova categoria</Link>
-        </Button>
+        <Link href="/admin/categories/new" className="mm-btn-primary gap-2">
+          <Plus className="h-4 w-4" />
+          Nova Categoria
+        </Link>
       </div>
 
-      <Card className="rounded-2xl">
-        <CardHeader>
-          <CardTitle className="text-base">Lista de categorias</CardTitle>
-        </CardHeader>
-
-        <CardContent className="space-y-4">
-          <form
-            className="flex flex-col gap-3 sm:flex-row"
-            onSubmit={handleSearchSubmit}
-          >
+      <div className="mm-card overflow-hidden">
+        <div className="border-b border-(--mm-border) p-6">
+          <div className="relative max-w-sm">
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--mm-text-soft)" />
             <input
-              className="h-10 flex-1 rounded-md border border-slate-300 px-3 text-sm outline-none transition focus:border-slate-500"
-              type="text"
-              placeholder="Buscar por nome da categoria"
+              className="mm-input w-full pl-11"
+              placeholder="Buscar categoria..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
+              onKeyDown={async (event) => {
+                if (event.key === "Enter") {
+                  await loadCategories(search);
+                }
+              }}
             />
+          </div>
+        </div>
 
-            <Button type="submit" variant="outline">
-              Buscar
-            </Button>
-          </form>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="border-b border-(--mm-border) text-left text-(--mm-text-soft)">
+                <th className="px-5 py-4 font-medium">Nome</th>
+                <th className="px-5 py-4 font-medium">Slug</th>
+                <th className="px-5 py-4 text-center font-medium">Ordem</th>
+                <th className="px-5 py-4 text-center font-medium">Status</th>
+                <th className="px-5 py-4 text-right font-medium">Ações</th>
+              </tr>
+            </thead>
 
-          {loading ? (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
-              Carregando categorias...
-            </div>
-          ) : null}
+            <tbody>
+              {categories.map((category) => (
+                <tr
+                  key={category.id}
+                  className="border-b border-(--mm-border) last:border-b-0"
+                >
+                  <td className="px-5 py-5 font-medium">{category.name}</td>
+                  <td className="px-5 py-5 text-(--mm-text-soft)">
+                    {category.slug}
+                  </td>
+                  <td className="px-5 py-5 text-center">{category.sortOrder}</td>
+                  <td className="px-5 py-5 text-center">
+                    {category.isActive ? "Ativa" : "Inativa"}
+                  </td>
+                  <td className="px-5 py-5">
+                    <div className="flex items-center justify-end gap-3">
+                      <Link
+                        href={`/admin/categories/${category.id}`}
+                        className="text-(--mm-text) transition hover:text-(--mm-primary)"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Link>
 
-          {!loading && error ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-              {error}
-            </div>
-          ) : null}
+                      <button
+                        type="button"
+                        onClick={() => void handleDelete(category)}
+                        className="text-(--mm-danger) transition hover:opacity-80"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
 
-          {!loading && !error && categories.length === 0 ? (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
-              Nenhuma categoria encontrada.
-            </div>
-          ) : null}
-
-          {!loading && !error && categories.length > 0 ? (
-            <div className="overflow-x-auto rounded-xl border border-slate-200">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-medium text-slate-600">
-                      Nome
-                    </th>
-                    <th className="px-4 py-3 text-left font-medium text-slate-600">
-                      Slug
-                    </th>
-                    <th className="px-4 py-3 text-left font-medium text-slate-600">
-                      Ordem
-                    </th>
-                    <th className="px-4 py-3 text-left font-medium text-slate-600">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-left font-medium text-slate-600">
-                      Ações
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody className="divide-y divide-slate-200 bg-white">
-                  {categories.map((category) => (
-                    <tr key={category.id}>
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-slate-900">
-                          {category.name}
-                        </div>
-                        {category.description ? (
-                          <div className="mt-1 text-xs text-slate-500">
-                            {category.description}
-                          </div>
-                        ) : null}
-                      </td>
-
-                      <td className="px-4 py-3 text-slate-600">
-                        {category.slug}
-                      </td>
-
-                      <td className="px-4 py-3 text-slate-600">
-                        {category.sortOrder}
-                      </td>
-
-                      <td className="px-4 py-3">
-                        <CategoryStatusBadge isActive={category.isActive} />
-                      </td>
-
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <Button asChild size="sm" variant="outline">
-                            <Link href={`/admin/categories/${category.id}`}>
-                              Editar
-                            </Link>
-                          </Button>
-
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => void handleDelete(category)}
-                          >
-                            Excluir
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : null}
-        </CardContent>
-      </Card>
+              {categories.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-5 py-10 text-center text-(--mm-text-soft)"
+                  >
+                    Nenhuma categoria encontrada.
+                  </td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

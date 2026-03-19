@@ -1,26 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { removeAccessToken } from "@/lib/auth-storage";
+import { LayoutPanelLeft } from "lucide-react";
 
 export function AdminHeader() {
-  const router = useRouter();
-
-  function handleLogout() {
-    removeAccessToken();
-    router.replace("/admin/login");
-  }
-
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-white px-6">
-      <span className="text-sm text-slate-500">
-        Painel administrativo
+    <header className="flex h-16 items-center gap-4 border-b border-(--mm-border) bg-(--mm-surface) px-6">
+      <LayoutPanelLeft className="h-4 w-4 text-(--mm-text-soft)" />
+      <span className="text-xl font-semibold text-(--mm-text)">
+        Painel Administrativo
       </span>
-
-      <Button variant="outline" onClick={handleLogout}>
-        Sair
-      </Button>
     </header>
   );
 }

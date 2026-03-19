@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BrandStatusBadge } from "@/components/admin/brand-status-badge";
+import { Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { deleteBrand } from "@/features/brands/services/delete-brand";
 import { getAdminBrands } from "@/features/brands/services/get-admin-brands";
 import type { Brand } from "@/features/brands/types/brand.type";
@@ -13,196 +11,137 @@ import { getAccessToken } from "@/lib/auth-storage";
 export default function AdminBrandsPage() {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+  async function fetchBrands(currentSearch?: string) {
+    const token = getAccessToken();
+    if (!token) return null;
+
+    return getAdminBrands({
+      token,
+      search: currentSearch,
+    });
+  }
 
   async function loadBrands(currentSearch?: string) {
-    try {
-      setError(null);
-      setLoading(true);
+    const response = await fetchBrands(currentSearch);
+    if (!response) return;
 
-      const token = getAccessToken();
-
-      if (!token) {
-        setError("Sessão não encontrada");
-        return;
-      }
-
-      const response = await getAdminBrands({
-        token,
-        search: currentSearch,
-      });
-
-      setBrands(response);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Não foi possível carregar as marcas"
-      );
-    } finally {
-      setLoading(false);
-    }
+    setBrands(response);
   }
 
   useEffect(() => {
-    void loadBrands();
+    async function initializeBrands() {
+      const response = await fetchBrands();
+      if (!response) return;
+
+      setBrands(response);
+    }
+
+    void initializeBrands();
   }, []);
 
-  async function handleSearchSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    await loadBrands(search);
-  }
-
   async function handleDelete(brand: Brand) {
-    const confirmed = window.confirm(
-      `Tem certeza que deseja excluir a marca "${brand.name}"?`
-    );
-
+    const confirmed = window.confirm(`Deseja excluir a marca "${brand.name}"?`);
     if (!confirmed) return;
 
-    try {
-      const token = getAccessToken();
+    const token = getAccessToken();
+    if (!token) return;
 
-      if (!token) {
-        setError("Sessão não encontrada");
-        return;
-      }
+    await deleteBrand({
+      token,
+      id: brand.id,
+    });
 
-      await deleteBrand({
-        token,
-        id: brand.id,
-      });
-
-      await loadBrands(search);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Não foi possível excluir a marca"
-      );
-    }
+    await loadBrands(search);
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Marcas</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Gerencie as marcas exibidas no catálogo da loja.
-          </p>
+          <h1 className="mm-page-title">Marcas</h1>
+          <p className="mm-page-subtitle">Gerencie as marcas dos produtos</p>
         </div>
 
-        <Button asChild>
-          <Link href="/admin/brands/new">Nova marca</Link>
-        </Button>
+        <Link href="/admin/brands/new" className="mm-btn-primary gap-2">
+          <Plus className="h-4 w-4" />
+          Nova Marca
+        </Link>
       </div>
 
-      <Card className="rounded-2xl">
-        <CardHeader>
-          <CardTitle className="text-base">Lista de marcas</CardTitle>
-        </CardHeader>
-
-        <CardContent className="space-y-4">
-          <form
-            className="flex flex-col gap-3 sm:flex-row"
-            onSubmit={handleSearchSubmit}
-          >
+      <div className="mm-card overflow-hidden">
+        <div className="border-b border-(--mm-border) p-6">
+          <div className="relative max-w-sm">
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--mm-text-soft)" />
             <input
-              className="h-10 flex-1 rounded-md border border-slate-300 px-3 text-sm outline-none transition focus:border-slate-500"
-              type="text"
-              placeholder="Buscar por nome da marca"
+              className="mm-input w-full pl-11"
+              placeholder="Buscar marca..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
+              onKeyDown={async (event) => {
+                if (event.key === "Enter") {
+                  await loadBrands(search);
+                }
+              }}
             />
+          </div>
+        </div>
 
-            <Button type="submit" variant="outline">
-              Buscar
-            </Button>
-          </form>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="border-b border-(--mm-border) text-left text-(--mm-text-soft)">
+                <th className="px-5 py-4 font-medium">Nome</th>
+                <th className="px-5 py-4 text-center font-medium">Status</th>
+                <th className="px-5 py-4 text-right font-medium">Ações</th>
+              </tr>
+            </thead>
 
-          {loading ? (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
-              Carregando marcas...
-            </div>
-          ) : null}
+            <tbody>
+              {brands.map((brand) => (
+                <tr
+                  key={brand.id}
+                  className="border-b border-(--mm-border) last:border-b-0"
+                >
+                  <td className="px-5 py-5 font-medium">{brand.name}</td>
+                  <td className="px-5 py-5 text-center">
+                    {brand.isActive ? "Ativa" : "Inativa"}
+                  </td>
+                  <td className="px-5 py-5">
+                    <div className="flex items-center justify-end gap-3">
+                      <Link
+                        href={`/admin/brands/${brand.id}`}
+                        className="text-(--mm-text) transition hover:text-(--mm-primary)"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Link>
 
-          {!loading && error ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-              {error}
-            </div>
-          ) : null}
+                      <button
+                        type="button"
+                        onClick={() => void handleDelete(brand)}
+                        className="text-(--mm-danger) transition hover:opacity-80"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
 
-          {!loading && !error && brands.length === 0 ? (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
-              Nenhuma marca encontrada.
-            </div>
-          ) : null}
-
-          {!loading && !error && brands.length > 0 ? (
-            <div className="overflow-x-auto rounded-xl border border-slate-200">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-medium text-slate-600">
-                      Nome
-                    </th>
-                    <th className="px-4 py-3 text-left font-medium text-slate-600">
-                      Slug
-                    </th>
-                    <th className="px-4 py-3 text-left font-medium text-slate-600">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-left font-medium text-slate-600">
-                      Ações
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody className="divide-y divide-slate-200 bg-white">
-                  {brands.map((brand) => (
-                    <tr key={brand.id}>
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-slate-900">
-                          {brand.name}
-                        </div>
-                        {brand.logoUrl ? (
-                          <div className="mt-1 text-xs text-slate-500">
-                            Logo cadastrada
-                          </div>
-                        ) : null}
-                      </td>
-
-                      <td className="px-4 py-3 text-slate-600">{brand.slug}</td>
-
-                      <td className="px-4 py-3">
-                        <BrandStatusBadge isActive={brand.isActive} />
-                      </td>
-
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <Button asChild size="sm" variant="outline">
-                            <Link href={`/admin/brands/${brand.id}`}>
-                              Editar
-                            </Link>
-                          </Button>
-
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => void handleDelete(brand)}
-                          >
-                            Excluir
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : null}
-        </CardContent>
-      </Card>
+              {brands.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={3}
+                    className="px-5 py-10 text-center text-(--mm-text-soft)"
+                  >
+                    Nenhuma marca encontrada.
+                  </td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

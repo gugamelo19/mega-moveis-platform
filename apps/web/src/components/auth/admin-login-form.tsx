@@ -1,26 +1,28 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff, LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { loginSchema, type LoginSchema } from "@/features/auth/schemas/login.schema";
-import type { AuthResponse } from "@/features/auth/types/auth-response.type";
+import { z } from "zod";
 import { api } from "@/lib/api";
 import { setAccessToken } from "@/lib/auth-storage";
 
+const loginSchema = z.object({
+  email: z.string().email("Informe um e-mail válido"),
+  password: z.string().min(1, "Informe sua senha"),
+});
+
+type LoginSchema = z.infer<typeof loginSchema>;
+
+type AuthResponse = {
+  accessToken: string;
+};
+
 export function AdminLoginForm() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -45,8 +47,7 @@ export function AdminLoginForm() {
       });
 
       setAccessToken(response.accessToken);
-
-      router.push("/admin");
+      router.replace("/admin");
       router.refresh();
     } catch (error) {
       setServerError(
@@ -56,53 +57,61 @@ export function AdminLoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md rounded-2xl shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-2xl">Login do painel</CardTitle>
-        <CardDescription>
-          Entre com seu e-mail e senha para acessar a área administrativa.
-        </CardDescription>
-      </CardHeader>
+    <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+      <div className="space-y-2">
+        <label htmlFor="email" className="text-sm font-medium text-(--mm-text)">
+          E-mail
+        </label>
+        <input
+          id="email"
+          type="email"
+          placeholder="admin@megamoveis.com"
+          className="mm-input w-full"
+          {...register("email")}
+        />
+        {errors.email ? (
+          <p className="text-sm text-(--mm-danger)">{errors.email.message}</p>
+        ) : null}
+      </div>
 
-      <CardContent>
-        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-2">
-            <Label htmlFor="email">E-mail</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="admin@megamoveis.com"
-              {...register("email")}
-            />
-            {errors.email ? (
-              <p className="text-sm text-red-600">{errors.email.message}</p>
-            ) : null}
-          </div>
+      <div className="space-y-2">
+        <label htmlFor="password" className="text-sm font-medium text-(--mm-text)">
+          Senha
+        </label>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              {...register("password")}
-            />
-            {errors.password ? (
-              <p className="text-sm text-red-600">{errors.password.message}</p>
-            ) : null}
-          </div>
+        <div className="relative">
+          <input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="********"
+            className="mm-input w-full pr-11"
+            {...register("password")}
+          />
 
-          {serverError ? (
-            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-              {serverError}
-            </div>
-          ) : null}
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-(--mm-text-soft)"
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
 
-          <Button className="w-full" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Entrando..." : "Entrar"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+        {errors.password ? (
+          <p className="text-sm text-(--mm-danger)">{errors.password.message}</p>
+        ) : null}
+      </div>
+
+      {serverError ? (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {serverError}
+        </div>
+      ) : null}
+
+      <button type="submit" disabled={isSubmitting} className="mm-btn-primary w-full gap-2">
+        <LogIn className="h-4 w-4" />
+        <span>{isSubmitting ? "Entrando..." : "Entrar"}</span>
+      </button>
+    </form>
   );
 }

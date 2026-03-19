@@ -1,47 +1,83 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  ImageIcon,
+  LayoutDashboard,
+  Layers3,
+  LogOut,
+  Package,
+  Tags,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+import { removeAccessToken } from "@/lib/auth-storage";
 
-const links = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/products", label: "Produtos" },
-  { href: "/admin/categories", label: "Categorias" },
-  { href: "/admin/brands", label: "Marcas" },
-  { href: "/admin/banners", label: "Banners" },
-  { href: "/admin/settings", label: "Configurações" },
+const menuItems = [
+  { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { title: "Produtos", href: "/admin/products", icon: Package },
+  { title: "Marcas", href: "/admin/brands", icon: Tags },
+  { title: "Banners", href: "/admin/banners", icon: ImageIcon },
+  { title: "Categorias", href: "/admin/categories", icon: Layers3 },
 ];
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  function handleLogout() {
+    removeAccessToken();
+    router.replace("/admin/login");
+  }
 
   return (
-    <aside className="w-64 border-r bg-white">
-      <div className="px-6 py-6 font-semibold text-lg">
-        Mega Móveis
+    <aside className="flex min-h-screen w-64 flex-col border-r border-(--mm-border) bg-(--mm-surface)">
+      <div className="border-b border-(--mm-border) px-6 py-5">
+        <Link href="/admin" className="block">
+          <span className="font-(--font-heading) text-3xl tracking-tight text-(--mm-text)">
+            MEGA <span className="text-(--mm-primary)">MÓVEIS</span>
+          </span>
+        </Link>
       </div>
 
-      <nav className="flex flex-col gap-1 px-3">
-        {links.map((link) => {
-          const active = pathname === link.href;
+      <div className="flex-1 px-4 py-8">
+        <p className="mb-4 px-2 text-xs font-semibold uppercase tracking-[0.18em] text-(--mm-text-soft)">
+          Menu
+        </p>
 
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "rounded-md px-3 py-2 text-sm transition-colors",
-                active
-                  ? "bg-slate-900 text-white"
-                  : "text-slate-600 hover:bg-slate-100"
-              )}
-            >
-              {link.label}
-            </Link>
-          );
-        })}
-      </nav>
+        <nav className="space-y-1.5">
+          {menuItems.map((item) => {
+            const active = pathname === item.href;
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition",
+                  active
+                    ? "bg-(--mm-surface-2) text-(--mm-text)"
+                    : "text-(--mm-text-soft) hover:bg-(--mm-surface-2) hover:text-(--mm-text)"
+                )}
+              >
+                <item.icon className="h-4 w-4" />
+                <span>{item.title}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      <div className="border-t border-(--mm-border) p-4">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-(--mm-text-soft) transition hover:bg-(--mm-surface-2) hover:text-(--mm-danger)"
+        >
+          <LogOut className="h-4 w-4" />
+          <span>Sair</span>
+        </button>
+      </div>
     </aside>
   );
 }

@@ -1,20 +1,36 @@
 import type { Metadata } from "next";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 
+const headingFont = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-heading",
+  weight: ["400", "500", "600", "700"],
+});
+
+const bodyFont = Inter({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
-  title: "Mega Móveis Platform",
-  description:
-    "Catálogo digital profissional para loja de móveis e eletrodomésticos.",
+  title: "Mega Móveis",
+  description: "Catálogo e painel administrativo da Mega Móveis",
 };
 
-type RootLayoutProps = Readonly<{
+export default function RootLayout({
+  children,
+}: Readonly<{
   children: React.ReactNode;
-}>;
-
-export default function RootLayout({ children }: RootLayoutProps) {
+}>) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body
+        className={`${headingFont.variable} ${bodyFont.variable} min-h-screen bg-(--mm-bg) font-sans text-(--mm-text) antialiased`}
+      >
+        {children}
+      </body>
     </html>
   );
 }

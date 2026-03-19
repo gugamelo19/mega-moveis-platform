@@ -1,12 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
-}
-
-* {
-  box-sizing: border-box;
+  --mm-bg: #f5f1eb;
+  --mm-surface: #f9f6f1;
+  --mm-surface-2: #efe9e1;
+  --mm-border: #ddd3c6;
+  --mm-text: #2b211b;
+  --mm-text-soft: #7a6c61;
+  --mm-primary: #c9781b;
+  --mm-primary-hover: #b86d17;
+  --mm-primary-foreground: #fffaf5;
+  --mm-dark: #3a2418;
+  --mm-dark-2: #5a3722;
+  --mm-danger: #dc4d41;
 }
 
 html {
@@ -14,12 +20,66 @@ html {
 }
 
 body {
-  margin: 0;
-  min-height: 100vh;
-  background: var(--background);
-  color: var(--foreground);
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
+  font-family: var(--font-body), sans-serif;
+  background: var(--mm-bg);
+  color: var(--mm-text);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading), serif;
+  letter-spacing: -0.02em;
+}
+
+.mm-page-title {
+  @apply text-4xl font-semibold leading-none;
+  color: var(--mm-text);
+}
+
+.mm-page-subtitle {
+  @apply mt-2 text-sm;
+  color: var(--mm-text-soft);
+}
+
+.mm-card {
+  background: var(--mm-surface);
+  border: 1px solid var(--mm-border);
+  @apply rounded-3xl shadow-sm;
+}
+
+.mm-input {
+  background: #fff;
+  border: 1px solid var(--mm-border);
+  color: var(--mm-text);
+  @apply h-11 rounded-xl px-4 text-sm outline-none transition;
+}
+
+.mm-input:focus {
+  border-color: var(--mm-primary);
+  box-shadow: 0 0 0 3px rgb(201 120 27 / 0.12);
+}
+
+.mm-btn-primary {
+  background: var(--mm-primary);
+  color: var(--mm-primary-foreground);
+  @apply inline-flex h-11 items-center justify-center rounded-xl px-5 text-sm font-semibold transition;
+}
+
+.mm-btn-primary:hover {
+  background: var(--mm-primary-hover);
+}
+
+.mm-btn-outline {
+  background: transparent;
+  border: 1px solid var(--mm-primary);
+  color: var(--mm-primary);
+  @apply inline-flex h-11 items-center justify-center rounded-xl px-5 text-sm font-semibold transition;
+}
+
+.mm-btn-outline:hover {
+  background: rgb(201 120 27 / 0.06);
 }
