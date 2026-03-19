@@ -1,6 +1,7 @@
 import { ProductGallery } from "@/components/store/product-gallery";
-import { WhatsAppButton } from "@/components/store/whatsapp-button";
+import { StoreContactCard } from "@/components/store/store-contact-card";
 import { getPublicProductBySlug } from "@/features/products/services/get-public-product-by-slug";
+import { getPublicStoreSettings } from "@/features/store-settings/services/get-public-store-settings";
 
 type ProductDetailsPageProps = {
   params: Promise<{
@@ -19,9 +20,11 @@ export default async function ProductDetailsPage({
   params,
 }: ProductDetailsPageProps) {
   const { slug } = await params;
-  const product = await getPublicProductBySlug(slug);
 
-  const whatsappNumber = "5575999999999";
+  const [product, storeSettings] = await Promise.all([
+    getPublicProductBySlug(slug),
+    getPublicStoreSettings(),
+  ]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
@@ -68,21 +71,10 @@ export default async function ProductDetailsPage({
             ) : null}
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-            <h2 className="text-sm font-semibold text-slate-900">
-              Interesse neste produto?
-            </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Fale com nossa equipe pelo WhatsApp e tire suas dúvidas.
-            </p>
-
-            <div className="mt-4">
-              <WhatsAppButton
-                phoneNumber={whatsappNumber}
-                productName={product.name}
-              />
-            </div>
-          </div>
+          <StoreContactCard
+            storeSettings={storeSettings}
+            productName={product.name}
+          />
 
           <div className="space-y-3">
             <h2 className="text-lg font-semibold text-slate-900">
