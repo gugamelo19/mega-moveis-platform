@@ -20,7 +20,7 @@ export function ProductCard({ product }: Props) {
 
   return (
     <Link
-      href={`/products/${product.id}`}
+      href={`/products/${product.slug}`}
       className="group block rounded-2xl border border-slate-200 bg-white p-3 transition hover:shadow-md"
     >
       <div className="relative h-48 w-full overflow-hidden rounded-xl bg-slate-100">
