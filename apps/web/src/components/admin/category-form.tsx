@@ -4,10 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   categorySchema,
   type CategoryFormData,
@@ -49,7 +45,6 @@ export function CategoryForm({
       setServerError(null);
 
       const token = getAccessToken();
-
       if (!token) {
         setServerError("Sessão não encontrada");
         return;
@@ -82,99 +77,109 @@ export function CategoryForm({
   }
 
   return (
-    <Card className="rounded-2xl">
-      <CardHeader>
-        <CardTitle className="text-xl">
+    <div className="mm-card p-8">
+      <div className="mb-8">
+        <h2 className="font-(--font-heading) text-4xl text-(--mm-text)">
           {categoryId ? "Editar categoria" : "Nova categoria"}
-        </CardTitle>
-      </CardHeader>
+        </h2>
+        <p className="mt-2 text-sm text-(--mm-text-soft)">
+          Organize o catálogo definindo categorias claras e bem estruturadas.
+        </p>
+      </div>
 
-      <CardContent>
-        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-2">
-            <Label htmlFor="name">Nome</Label>
-            <Input id="name" placeholder="Ex.: Sofás" {...register("name")} />
-            {errors.name ? (
-              <p className="text-sm text-red-600">{errors.name.message}</p>
-            ) : null}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">Descrição</Label>
-            <Input
-              id="description"
-              placeholder="Ex.: Sofás para sala de estar"
-              {...register("description")}
-            />
-            {errors.description ? (
-              <p className="text-sm text-red-600">
-                {errors.description.message}
-              </p>
-            ) : null}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="imageUrl">URL da imagem</Label>
-            <Input
-              id="imageUrl"
-              placeholder="https://..."
-              {...register("imageUrl")}
-            />
-            {errors.imageUrl ? (
-              <p className="text-sm text-red-600">{errors.imageUrl.message}</p>
-            ) : null}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="sortOrder">Ordem</Label>
-            <Input
-              id="sortOrder"
-              type="number"
-              min={0}
-              {...register("sortOrder")}
-            />
-            {errors.sortOrder ? (
-              <p className="text-sm text-red-600">{errors.sortOrder.message}</p>
-            ) : null}
-          </div>
-
-          <div className="flex items-center gap-3">
-            <input
-              id="isActive"
-              type="checkbox"
-              className="h-4 w-4 rounded border-slate-300"
-              {...register("isActive")}
-            />
-            <Label htmlFor="isActive">Categoria ativa</Label>
-          </div>
-
-          {serverError ? (
-            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-              {serverError}
-            </div>
+      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <div className="space-y-2">
+          <label htmlFor="name" className="text-sm font-medium text-(--mm-text)">
+            Nome
+          </label>
+          <input
+            id="name"
+            placeholder="Ex.: Sala de Estar"
+            className="mm-input w-full"
+            {...register("name")}
+          />
+          {errors.name ? (
+            <p className="text-sm text-(--mm-danger)">{errors.name.message}</p>
           ) : null}
+        </div>
 
-          <div className="flex items-center gap-3">
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? categoryId
-                  ? "Salvando..."
-                  : "Criando..."
-                : categoryId
-                  ? "Salvar alterações"
-                  : "Salvar categoria"}
-            </Button>
+        <div className="space-y-2">
+          <label htmlFor="description" className="text-sm font-medium text-(--mm-text)">
+            Descrição
+          </label>
+          <input
+            id="description"
+            placeholder="Descrição breve da categoria"
+            className="mm-input w-full"
+            {...register("description")}
+          />
+          {errors.description ? (
+            <p className="text-sm text-(--mm-danger)">
+              {errors.description.message}
+            </p>
+          ) : null}
+        </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push("/admin/categories")}
-            >
-              Cancelar
-            </Button>
+        <div className="space-y-2">
+          <label htmlFor="imageUrl" className="text-sm font-medium text-(--mm-text)">
+            URL da imagem
+          </label>
+          <input
+            id="imageUrl"
+            placeholder="https://..."
+            className="mm-input w-full"
+            {...register("imageUrl")}
+          />
+          {errors.imageUrl ? (
+            <p className="text-sm text-(--mm-danger)">{errors.imageUrl.message}</p>
+          ) : null}
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="sortOrder" className="text-sm font-medium text-(--mm-text)">
+            Ordem
+          </label>
+          <input
+            id="sortOrder"
+            type="number"
+            min={0}
+            className="mm-input w-full"
+            {...register("sortOrder")}
+          />
+          {errors.sortOrder ? (
+            <p className="text-sm text-(--mm-danger)">{errors.sortOrder.message}</p>
+          ) : null}
+        </div>
+
+        <label className="flex items-center gap-3 rounded-2xl border border-(--mm-border) bg-(--mm-surface-2) px-4 py-3">
+          <input type="checkbox" {...register("isActive")} />
+          <span className="text-sm text-(--mm-text)">Categoria ativa</span>
+        </label>
+
+        {serverError ? (
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {serverError}
           </div>
-        </form>
-      </CardContent>
-    </Card>
+        ) : null}
+
+        <div className="flex items-center gap-3">
+          <button type="submit" disabled={isSubmitting} className="mm-btn-primary">
+            {isSubmitting
+              ? "Salvando..."
+              : categoryId
+                ? "Salvar alterações"
+                : "Salvar categoria"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => router.push("/admin/categories")}
+            className="mm-btn-outline"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

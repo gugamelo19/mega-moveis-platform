@@ -4,9 +4,9 @@ export default function NewCategoryPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Nova categoria</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Cadastre uma nova categoria para organizar o catálogo da loja.
+        <h1 className="mm-page-title">Nova categoria</h1>
+        <p className="mm-page-subtitle">
+          Cadastre uma nova categoria para organizar os produtos.
         </p>
       </div>
 

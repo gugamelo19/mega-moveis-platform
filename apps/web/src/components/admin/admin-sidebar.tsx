@@ -10,6 +10,7 @@ import {
   Package,
   Tags,
 } from "lucide-react";
+import { AdminWordmark } from "@/components/brand/admin-wordmark";
 import { cn } from "@/lib/utils";
 import { removeAccessToken } from "@/lib/auth-storage";
 
@@ -34,9 +35,7 @@ export function AdminSidebar() {
     <aside className="flex min-h-screen w-64 flex-col border-r border-(--mm-border) bg-(--mm-surface)">
       <div className="border-b border-(--mm-border) px-6 py-5">
         <Link href="/admin" className="block">
-          <span className="font-(--font-heading) text-3xl tracking-tight text-(--mm-text)">
-            MEGA <span className="text-(--mm-primary)">MÓVEIS</span>
-          </span>
+          <AdminWordmark />
         </Link>
       </div>
 

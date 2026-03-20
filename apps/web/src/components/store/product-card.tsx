@@ -6,52 +6,81 @@ type Props = {
   product: Product;
 };
 
-export function ProductCard({ product }: Props) {
-  const mainImage =
-    product.images.find((img) => img.isPrimary) ??
-    product.images[0];
+function formatCurrency(value: string) {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(Number(value));
+}
 
-  function formatCurrency(value: string) {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(Number(value));
-  }
+export function ProductCard({ product }: Props) {
+  const mainImage = product.images.find((img) => img.isPrimary) ?? product.images[0];
+
+  let tag: string | null = null;
+
+  if (product.isFeatured) tag = "Mais vendido";
+  else if (product.isOnSale) tag = "Oferta";
+  else if (product.isAvailable) tag = "Disponível";
+
+  const whatsappMessage = `Olá! Tenho interesse no produto: ${product.name}`;
+  const whatsappHref = `https://wa.me/5575999999999?text=${encodeURIComponent(
+    whatsappMessage
+  )}`;
 
   return (
-    <Link
-      href={`/products/${product.id}`}
-      className="group block rounded-2xl border border-slate-200 bg-white p-3 transition hover:shadow-md"
-    >
-      <div className="relative h-48 w-full overflow-hidden rounded-xl bg-slate-100">
-        {mainImage ? (
-          <Image
-            src={mainImage.imageUrl}
-            alt={mainImage.altText ?? product.name}
-            fill
-            className="object-cover transition group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, 25vw"
-          />
-        ) : null}
-      </div>
+    <article className="overflow-hidden rounded-[28px] border border-(--mm-border) bg-(--mm-surface) transition hover:shadow-lg">
+      <Link href={`/products/${product.slug}`} className="group block">
+        <div className="relative aspect-square overflow-hidden bg-(--mm-surface-2)">
+          {mainImage ? (
+            <Image
+              src={mainImage.imageUrl}
+              alt={mainImage.altText ?? product.name}
+              fill
+              className="object-cover transition duration-500 group-hover:scale-[1.03]"
+              sizes="(max-width: 768px) 100vw, 25vw"
+            />
+          ) : null}
 
-      <div className="mt-3 space-y-1">
-        <h3 className="text-sm font-medium text-slate-900 line-clamp-2">
-          {product.name}
-        </h3>
+          {tag ? (
+            <span className="absolute left-3 top-3 rounded-full bg-(--mm-primary) px-3 py-1 text-xs font-semibold text-(--mm-primary-foreground)">
+              {tag}
+            </span>
+          ) : null}
+        </div>
+      </Link>
 
-        <div className="flex items-center gap-2">
-          <span className="text-base font-semibold text-slate-900">
+      <div className="p-5">
+        <Link href={`/products/${product.slug}`}>
+          <h3 className="text-2xl font-semibold text-(--mm-text) transition hover:text-(--mm-primary)">
+            {product.name}
+          </h3>
+        </Link>
+
+        <div className="mt-3 flex items-baseline gap-2">
+          <span className="text-[2rem] font-semibold text-(--mm-primary)">
             {formatCurrency(product.price)}
           </span>
 
           {product.compareAtPrice ? (
-            <span className="text-sm text-slate-400 line-through">
+            <span className="text-lg text-(--mm-text-soft) line-through">
               {formatCurrency(product.compareAtPrice)}
             </span>
           ) : null}
         </div>
+
+        <p className="mt-1 text-sm text-(--mm-text-soft)">
+          ou em até 12x no cartão
+        </p>
+
+        <Link
+          href={whatsappHref}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl border-2 border-(--mm-primary) bg-transparent px-4 text-sm font-semibold text-(--mm-primary) transition hover:bg-(--mm-primary) hover:text-(--mm-primary-foreground)"
+        >
+          Consultar via WhatsApp
+        </Link>
       </div>
-    </Link>
+    </article>
   );
 }

@@ -8,12 +8,8 @@ import type { Category } from "@/features/categories/types/category.type";
 import { getAccessToken } from "@/lib/auth-storage";
 
 export default function EditCategoryPage() {
-    
   const params = useParams();
   const id = params.id as string;
-
-  console.log("EditCategoryPage renderizou")
-  console.log("params", params)
 
   const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,7 +49,7 @@ export default function EditCategoryPage() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+      <div className="mm-card p-8 text-sm text-(--mm-text-soft)">
         Carregando categoria...
       </div>
     );
@@ -61,7 +57,7 @@ export default function EditCategoryPage() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
         {error}
       </div>
     );
@@ -69,7 +65,7 @@ export default function EditCategoryPage() {
 
   if (!category) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+      <div className="mm-card p-8 text-sm text-(--mm-text-soft)">
         Categoria não encontrada.
       </div>
     );
@@ -78,8 +74,8 @@ export default function EditCategoryPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Editar categoria</h1>
-        <p className="mt-2 text-sm text-slate-600">
+        <h1 className="mm-page-title">Editar categoria</h1>
+        <p className="mm-page-subtitle">
           Atualize os dados da categoria selecionada.
         </p>
       </div>

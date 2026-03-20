@@ -8,14 +8,14 @@ type Props = {
 export function ProductGrid({ products }: Props) {
   if (products.length === 0) {
     return (
-      <div className="text-sm text-slate-500">
+      <div className="text-center text-sm text-(--mm-text-soft)">
         Nenhum produto disponível.
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}

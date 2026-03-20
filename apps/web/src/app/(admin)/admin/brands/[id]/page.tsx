@@ -49,7 +49,7 @@ export default function EditBrandPage() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+      <div className="mm-card p-8 text-sm text-(--mm-text-soft)">
         Carregando marca...
       </div>
     );
@@ -57,7 +57,7 @@ export default function EditBrandPage() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
         {error}
       </div>
     );
@@ -65,7 +65,7 @@ export default function EditBrandPage() {
 
   if (!brand) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+      <div className="mm-card p-8 text-sm text-(--mm-text-soft)">
         Marca não encontrada.
       </div>
     );
@@ -74,8 +74,8 @@ export default function EditBrandPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Editar marca</h1>
-        <p className="mt-2 text-sm text-slate-600">
+        <h1 className="mm-page-title">Editar marca</h1>
+        <p className="mm-page-subtitle">
           Atualize os dados da marca selecionada.
         </p>
       </div>

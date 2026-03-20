@@ -1,18 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  --mm-bg: #f5f1eb;
-  --mm-surface: #f9f6f1;
-  --mm-surface-2: #efe9e1;
-  --mm-border: #ddd3c6;
-  --mm-text: #2b211b;
-  --mm-text-soft: #7a6c61;
-  --mm-primary: #c9781b;
-  --mm-primary-hover: #b86d17;
-  --mm-primary-foreground: #fffaf5;
-  --mm-dark: #3a2418;
-  --mm-dark-2: #5a3722;
-  --mm-danger: #dc4d41;
+  --mm-brand-blue: #1441a3;
+  --mm-brand-blue-strong: #0c2f7a;
+  --mm-brand-red: #ef232b;
+  --mm-brand-red-strong: #c91721;
+  --mm-brand-cloud: #f4f7ff;
+  --mm-brand-ice: #e8efff;
+  --mm-brand-line: #c7d5f2;
+  --mm-brand-ink: #10214a;
+  --mm-brand-muted: #61739a;
+  --mm-primary-soft: rgb(239 35 43 / 0.08);
+  --mm-accent-soft: rgb(20 65 163 / 0.1);
+
+  --mm-bg: var(--mm-brand-cloud);
+  --mm-surface: #ffffff;
+  --mm-surface-2: var(--mm-brand-ice);
+  --mm-border: var(--mm-brand-line);
+  --mm-text: var(--mm-brand-ink);
+  --mm-text-soft: var(--mm-brand-muted);
+  --mm-primary: var(--mm-brand-red);
+  --mm-primary-hover: var(--mm-brand-red-strong);
+  --mm-primary-foreground: #ffffff;
+  --mm-dark: #081c58;
+  --mm-dark-2: var(--mm-brand-blue-strong);
+  --mm-danger: var(--mm-brand-red-strong);
+
+  --brand-navy: var(--mm-brand-blue);
+  --brand-red: var(--mm-brand-red);
+  --admin-surface: var(--mm-surface);
+  --admin-border: var(--mm-border);
+  --admin-text: var(--mm-text);
+  --admin-muted: var(--mm-text-soft);
+  --admin-primary: var(--mm-brand-blue);
+  --admin-primary-strong: var(--mm-brand-blue-strong);
+  --admin-primary-soft: var(--mm-accent-soft);
 }
 
 html {
@@ -23,6 +45,10 @@ body {
   font-family: var(--font-body), sans-serif;
   background: var(--mm-bg);
   color: var(--mm-text);
+}
+
+.font-display {
+  font-family: var(--font-display), cursive;
 }
 
 h1,
@@ -60,7 +86,7 @@ h6 {
 
 .mm-input:focus {
   border-color: var(--mm-primary);
-  box-shadow: 0 0 0 3px rgb(201 120 27 / 0.12);
+  box-shadow: 0 0 0 3px var(--mm-primary-soft);
 }
 
 .mm-btn-primary {
@@ -81,5 +107,5 @@ h6 {
 }
 
 .mm-btn-outline:hover {
-  background: rgb(201 120 27 / 0.06);
+  background: var(--mm-primary-soft);
 }

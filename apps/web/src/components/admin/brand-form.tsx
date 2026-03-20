@@ -4,10 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   brandSchema,
   type BrandFormData,
@@ -77,72 +73,76 @@ export function BrandForm({ brandId, defaultValues }: BrandFormProps) {
   }
 
   return (
-    <Card className="rounded-2xl">
-      <CardHeader>
-        <CardTitle className="text-xl">
+    <div className="mm-card p-8">
+      <div className="mb-8">
+        <h2 className="font-(--font-heading) text-4xl text-(--mm-text)">
           {brandId ? "Editar marca" : "Nova marca"}
-        </CardTitle>
-      </CardHeader>
+        </h2>
+        <p className="mt-2 text-sm text-(--mm-text-soft)">
+          Preencha os dados da marca para organizar melhor o catálogo.
+        </p>
+      </div>
 
-      <CardContent>
-        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-2">
-            <Label htmlFor="name">Nome</Label>
-            <Input id="name" placeholder="Ex.: Electrolux" {...register("name")} />
-            {errors.name ? (
-              <p className="text-sm text-red-600">{errors.name.message}</p>
-            ) : null}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="logoUrl">URL da logo</Label>
-            <Input
-              id="logoUrl"
-              placeholder="https://..."
-              {...register("logoUrl")}
-            />
-            {errors.logoUrl ? (
-              <p className="text-sm text-red-600">{errors.logoUrl.message}</p>
-            ) : null}
-          </div>
-
-          <div className="flex items-center gap-3">
-            <input
-              id="isActive"
-              type="checkbox"
-              className="h-4 w-4 rounded border-slate-300"
-              {...register("isActive")}
-            />
-            <Label htmlFor="isActive">Marca ativa</Label>
-          </div>
-
-          {serverError ? (
-            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-              {serverError}
-            </div>
+      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <div className="space-y-2">
+          <label htmlFor="name" className="text-sm font-medium text-(--mm-text)">
+            Nome
+          </label>
+          <input
+            id="name"
+            placeholder="Ex.: Electrolux"
+            className="mm-input w-full"
+            {...register("name")}
+          />
+          {errors.name ? (
+            <p className="text-sm text-(--mm-danger)">{errors.name.message}</p>
           ) : null}
+        </div>
 
-          <div className="flex items-center gap-3">
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? brandId
-                  ? "Salvando..."
-                  : "Criando..."
-                : brandId
-                  ? "Salvar alterações"
-                  : "Salvar marca"}
-            </Button>
+        <div className="space-y-2">
+          <label htmlFor="logoUrl" className="text-sm font-medium text-(--mm-text)">
+            URL da logo
+          </label>
+          <input
+            id="logoUrl"
+            placeholder="https://..."
+            className="mm-input w-full"
+            {...register("logoUrl")}
+          />
+          {errors.logoUrl ? (
+            <p className="text-sm text-(--mm-danger)">{errors.logoUrl.message}</p>
+          ) : null}
+        </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push("/admin/brands")}
-            >
-              Cancelar
-            </Button>
+        <label className="flex items-center gap-3 rounded-2xl border border-(--mm-border) bg-(--mm-surface-2) px-4 py-3">
+          <input type="checkbox" {...register("isActive")} />
+          <span className="text-sm text-(--mm-text)">Marca ativa</span>
+        </label>
+
+        {serverError ? (
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {serverError}
           </div>
-        </form>
-      </CardContent>
-    </Card>
+        ) : null}
+
+        <div className="flex items-center gap-3">
+          <button type="submit" disabled={isSubmitting} className="mm-btn-primary">
+            {isSubmitting
+              ? "Salvando..."
+              : brandId
+                ? "Salvar alterações"
+                : "Salvar marca"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => router.push("/admin/brands")}
+            className="mm-btn-outline"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

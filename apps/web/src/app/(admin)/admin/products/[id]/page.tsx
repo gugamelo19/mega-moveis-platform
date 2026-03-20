@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { ProductForm } from "@/components/admin/product-form";
 import { ProductImagesList } from "@/components/admin/product-images-list";
 import { getProductById } from "@/features/products/services/get-product-by-id";
@@ -52,7 +51,7 @@ export default function EditProductPage() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+      <div className="mm-card p-8 text-sm text-(--mm-text-soft)">
         Carregando produto...
       </div>
     );
@@ -60,7 +59,7 @@ export default function EditProductPage() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
         {error}
       </div>
     );
@@ -68,7 +67,7 @@ export default function EditProductPage() {
 
   if (!product) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+      <div className="mm-card p-8 text-sm text-(--mm-text-soft)">
         Produto não encontrado.
       </div>
     );
@@ -77,8 +76,8 @@ export default function EditProductPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Editar produto</h1>
-        <p className="mt-2 text-sm text-slate-600">
+        <h1 className="mm-page-title">Editar produto</h1>
+        <p className="mm-page-subtitle">
           Atualize os dados principais do produto selecionado.
         </p>
       </div>
@@ -102,15 +101,23 @@ export default function EditProductPage() {
         }}
       />
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Imagens</h2>
+      <div className="mm-card p-8">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <div>
+            <h2 className="font-(--font-heading) text-4xl text-(--mm-text)">
+              Imagens
+            </h2>
+            <p className="mt-2 text-sm text-(--mm-text-soft)">
+              Gerencie as imagens exibidas no catálogo.
+            </p>
+          </div>
 
-          <Button asChild>
-            <Link href={`/admin/products/${product.id}/images`}>
-              Adicionar imagem
-            </Link>
-          </Button>
+          <Link
+            href={`/admin/products/${product.id}/images`}
+            className="mm-btn-primary"
+          >
+            Adicionar imagem
+          </Link>
         </div>
 
         <ProductImagesList productId={product.id} />

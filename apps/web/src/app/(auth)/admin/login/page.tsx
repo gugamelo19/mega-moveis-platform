@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { AdminLoginForm } from "@/components/auth/admin-login-form";
+import { AdminWordmark } from "@/components/brand/admin-wordmark";
 import { useAccessToken } from "@/hooks/use-access-token";
 import { useIsClient } from "@/hooks/use-is-client";
 
@@ -19,12 +20,12 @@ export default function AdminLoginPage() {
   if (!isClient) return null;
 
   return (
-    <section className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#6a432c,#3a2418_55%,#2b1a11)] px-6 py-10">
-      <div className="w-full max-w-md rounded-[28px] border border-white/10 bg-(--mm-surface) p-8 shadow-2xl">
+    <section className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#1b53cf,#0c2f7a_52%,#081c58)] px-6 py-10">
+      <div className="w-full max-w-md rounded-[28px] border border-(--mm-border) bg-[rgba(255,255,255,0.96)] p-8 shadow-2xl">
         <div className="mb-8 text-center">
-          <h1 className="font-(--font-heading) text-4xl text-(--mm-text)">
-            MEGA <span className="text-(--mm-primary)">MÓVEIS</span>
-          </h1>
+          <div className="flex justify-center">
+            <AdminWordmark />
+          </div>
           <p className="mt-3 text-sm text-(--mm-text-soft)">
             Painel Administrativo
           </p>
