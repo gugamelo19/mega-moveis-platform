@@ -3,9 +3,10 @@ import { ProductCard } from "./product-card";
 
 type Props = {
   products: Product[];
+  whatsappNumber?: string;
 };
 
-export function ProductGrid({ products }: Props) {
+export function ProductGrid({ products, whatsappNumber }: Props) {
   if (products.length === 0) {
     return (
       <div className="text-center text-sm text-(--mm-text-soft)">
@@ -17,7 +18,11 @@ export function ProductGrid({ products }: Props) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard
+          key={product.id}
+          product={product}
+          whatsappNumber={whatsappNumber}
+        />
       ))}
     </div>
   );

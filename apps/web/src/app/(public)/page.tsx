@@ -20,6 +20,7 @@ export default async function PublicHomePage() {
 
   return (
     <div>
+      
       <HomeHero banner={mainBanner} storeName={storeSettings.storeName} />
 
       <section className="border-y border-(--mm-border) bg-(--mm-surface-2) py-16 md:py-20">

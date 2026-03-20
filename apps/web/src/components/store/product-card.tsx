@@ -4,6 +4,7 @@ import type { Product } from "@/features/products/types/product.type";
 
 type Props = {
   product: Product;
+  whatsappNumber?: string;
 };
 
 function formatCurrency(value: string) {
@@ -13,7 +14,7 @@ function formatCurrency(value: string) {
   }).format(Number(value));
 }
 
-export function ProductCard({ product }: Props) {
+export function ProductCard({ product, whatsappNumber }: Props) {
   const mainImage = product.images.find((img) => img.isPrimary) ?? product.images[0];
 
   let tag: string | null = null;
@@ -22,10 +23,11 @@ export function ProductCard({ product }: Props) {
   else if (product.isOnSale) tag = "Oferta";
   else if (product.isAvailable) tag = "Disponível";
 
-  const whatsappMessage = `Olá! Tenho interesse no produto: ${product.name}`;
-  const whatsappHref = `https://wa.me/5575999999999?text=${encodeURIComponent(
-    whatsappMessage
-  )}`;
+  const whatsappHref = whatsappNumber
+    ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+        `Olá! Tenho interesse no produto: ${product.name}`
+      )}`
+    : null;
 
   return (
     <article className="overflow-hidden rounded-[28px] border border-(--mm-border) bg-(--mm-surface) transition hover:shadow-lg">
@@ -51,7 +53,7 @@ export function ProductCard({ product }: Props) {
 
       <div className="p-5">
         <Link href={`/products/${product.slug}`}>
-          <h3 className="text-2xl font-semibold text-(--mm-text) transition hover:text-(--mm-primary)">
+          <h3 className="font-(--font-heading) text-2xl text-(--mm-text) transition hover:text-(--mm-primary)">
             {product.name}
           </h3>
         </Link>
@@ -72,14 +74,23 @@ export function ProductCard({ product }: Props) {
           ou em até 12x no cartão
         </p>
 
-        <Link
-          href={whatsappHref}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl border-2 border-(--mm-primary) bg-transparent px-4 text-sm font-semibold text-(--mm-primary) transition hover:bg-(--mm-primary) hover:text-(--mm-primary-foreground)"
-        >
-          Consultar via WhatsApp
-        </Link>
+        {whatsappHref ? (
+          <Link
+            href={whatsappHref}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl border-2 border-(--mm-primary) bg-transparent px-4 text-sm font-semibold text-(--mm-primary) transition hover:bg-(--mm-primary) hover:text-(--mm-primary-foreground)"
+          >
+            Consultar via WhatsApp
+          </Link>
+        ) : (
+          <Link
+            href={`/products/${product.slug}`}
+            className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl border-2 border-(--mm-primary) bg-transparent px-4 text-sm font-semibold text-(--mm-primary) transition hover:bg-(--mm-primary) hover:text-(--mm-primary-foreground)"
+          >
+            Ver produto
+          </Link>
+        )}
       </div>
     </article>
   );

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Product } from "@/features/products/types/product.type";
+import { getPublicStoreSettings } from "@/features/store-settings/services/get-public-store-settings";
 import { ProductGrid } from "./product-grid";
 
 type HomeSectionProps = {
@@ -10,7 +11,7 @@ type HomeSectionProps = {
   products: Product[];
 };
 
-export function HomeSection({
+export async function HomeSection({
   id,
   title,
   eyebrow,
@@ -20,6 +21,8 @@ export function HomeSection({
   if (products.length === 0) {
     return null;
   }
+
+  const storeSettings = await getPublicStoreSettings();
 
   return (
     <section id={id} className="bg-(--mm-bg) py-20 md:py-28">
@@ -38,12 +41,15 @@ export function HomeSection({
           </p>
         </div>
 
-        <ProductGrid products={products} />
+        <ProductGrid
+          products={products}
+          whatsappNumber={storeSettings.whatsappNumber}
+        />
 
         <div className="mt-10 text-center">
           <Link
             href="/products"
-            className="inline-flex items-center justify-center rounded-2xl border border-(--mm-primary) px-6 py-3 text-sm font-semibold text-(--mm-primary) transition hover:bg-(--mm-primary-soft)"
+            className="inline-flex items-center justify-center rounded-2xl border border-(--mm-primary) px-6 py-3 text-sm font-semibold text-(--mm-primary) transition hover:bg-[rgba(201,120,27,0.06)]"
           >
             Ver todos os produtos
           </Link>
