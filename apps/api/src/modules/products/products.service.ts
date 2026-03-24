@@ -94,38 +94,61 @@ export class ProductsService {
   }
 
   async findAllPublic(query: QueryPublicProductsDto) {
-    const where: Prisma.ProductWhereInput = {
+    const { search, categoryId, brandId, sort = 'newest', page = '1' } = query;
+
+    const currentPage = Math.max(Number(page) || 1, 1);
+    const perPage = 8;
+    const skip = (currentPage - 1) * perPage;
+
+    const where = {
       isAvailable: true,
+      ...(search
+        ? {
+            name: {
+              contains: search,
+              mode: 'insensitive' as const,
+            },
+          }
+        : {}),
+      ...(categoryId ? { categoryId } : {}),
+      ...(brandId ? { brandId } : {}),
     };
 
-    if (query.search) {
-      where.name = {
-        contains: query.search,
-        mode: 'insensitive',
-      };
-    }
+    const orderBy =
+      sort === 'price_asc'
+        ? { price: 'asc' as const }
+        : sort === 'price_desc'
+          ? { price: 'desc' as const }
+          : sort === 'name_asc'
+            ? { name: 'asc' as const }
+            : { createdAt: 'desc' as const };
 
-    if (query.categoryId) {
-      where.categoryId = query.categoryId;
-    }
+    const [items, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where,
+        include: {
+          category: true,
+          brand: true,
+          images: {
+            orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }],
+          },
+        },
+        orderBy,
+        skip,
+        take: perPage,
+      }),
+      this.prisma.product.count({ where }),
+    ]);
 
-    if (query.brandId) {
-      where.brandId = query.brandId;
-    }
-
-    if (query.isFeatured !== undefined) {
-      where.isFeatured = query.isFeatured === 'true';
-    }
-
-    if (query.isOnSale !== undefined) {
-      where.isOnSale = query.isOnSale === 'true';
-    }
-
-    return this.prisma.product.findMany({
-      where,
-      include: publicProductInclude,
-      orderBy: [{ createdAt: 'desc' }],
-    });
+    return {
+      items,
+      meta: {
+        page: currentPage,
+        perPage,
+        total,
+        totalPages: Math.ceil(total / perPage),
+      },
+    };
   }
 
   async findAllAdmin(query: QueryAdminProductsDto) {

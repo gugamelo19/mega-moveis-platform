@@ -1,23 +1,23 @@
-import { IsBooleanString, IsOptional, IsString } from 'class-validator';
+import { IsIn, IsOptional, IsString } from 'class-validator';
 
 export class QueryPublicProductsDto {
   @IsOptional()
-  @IsString({ message: 'Busca inválida' })
+  @IsString()
   search?: string;
 
   @IsOptional()
-  @IsString({ message: 'categoryId inválido' })
+  @IsString()
   categoryId?: string;
 
   @IsOptional()
-  @IsString({ message: 'brandId inválido' })
+  @IsString()
   brandId?: string;
 
   @IsOptional()
-  @IsBooleanString({ message: 'isFeatured deve ser true ou false' })
-  isFeatured?: string;
+  @IsIn(['newest', 'price_asc', 'price_desc', 'name_asc'])
+  sort?: 'newest' | 'price_asc' | 'price_desc' | 'name_asc';
 
   @IsOptional()
-  @IsBooleanString({ message: 'isOnSale deve ser true ou false' })
-  isOnSale?: string;
+  @IsString()
+  page?: string;
 }
